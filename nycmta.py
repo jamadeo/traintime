@@ -14,11 +14,9 @@ def loadStops(stopsFileName):
     headerRow = next(reader)
     stop_id_ix = headerRow.index('stop_id')
     stop_name_ix = headerRow.index('stop_name')
-    stop_type_ix = headerRow.index('stop_type')
 
     for row in reader:
-        print row
-        stopsDict[row[stop_id_ix]] = {"stop_name" : row[stop_name_ix], "stop_type" : row[stop_type_ix]}
+        stopsDict[row[stop_id_ix]] = {"stop_name" : row[stop_name_ix]}
     return stopsDict
     
 def loadRoutes(routesFileName):
@@ -67,7 +65,7 @@ def loadStopTimes(stopTimesFileName):
     
     headerRow = next(reader)
     trip_id_ix = headerRow.index('trip_id')
-    stip_id_ix = headerRow.index('stop_id')
+    stop_id_ix = headerRow.index('stop_id')
     arrival_time_ix = headerRow.index('arrival_time')
     departure_time_ix = headerRow.index('departure_time')
     stop_sequence_ix = headerRow.index('stop_sequence')
