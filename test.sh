@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./gtfs_test.py google_transit_2014
+./gtfs_test.py google_transit_2014_07_04
