@@ -1,41 +1,100 @@
 #!/usr/bin/python
 
 import sys
-from nycmta import *
+import time
+import argparse
+from nycmta import GtfsCollection, TrainTrip
+
+class color:
+   PURPLE = '\033[95m'
+   CYAN = '\033[96m'
+   DARKCYAN = '\033[36m'
+   BLUE = '\033[94m'
+   GREEN = '\033[92m'
+   YELLOW = '\033[93m'
+   RED = '\033[91m'
+   BOLD = '\033[1m'
+   UNDERLINE = '\033[4m'
+   END = '\033[0m'
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-G", "--GTFSDirectory", help="Directory containing MTA's static GTFS data")
+    parser.add_argument("-s", "--stations", nargs="+", help="List of interested stations")
+    parser.add_argument("-H", "--htmlOutput", help="Optionally output HTML to a specified file")
+    return parser.parse_args()
+
+class Writer():
+    def __init__(self, fp=sys.stdout, use_html=False):
+        self.fp = fp
+        self.use_html = use_html
+
+    def start_write(self):
+        if self.use_html:
+            self.fp.write("<table>\n")
+
+    def write_header_row(self, header_text):
+        if self.use_html:
+            str_to_write = "\t<th colspan=\"2\"><h3>" + header_text + "</h3></th>\n"
+        else:
+            str_to_write = header_text + "\n"
+        self.fp.write(str_to_write)
+
+    def write_status_row(self, arrival_col, status_col):
+        if self.use_html:
+            str_to_write = "\t<tr><td>" + arrival_col + "</td><td>" + status_col + "</td></tr>\n"
+        else:
+            str_to_write = arrival_col + "\n\t" + status_col + "\n"
+        self.fp.write(str_to_write)
+
+    def end_write(self):
+        if self.use_html:
+            self.fp.write("</table>\n")
+
 
 ########################################################################
 # Main Program Begin
 ########################################################################
 
-if len(sys.argv) != 2:
-	print "Usage:", sys.argv[0], "GTFS_DIR"
-	sys.exit(-1)
+def main():
+    args = parse_args()
+    gtfs_dir = args.GTFSDirectory
+    gtfs = GtfsCollection("7cecfe7c2a37b4301cc351b57aaaed9f")
 
-gtfs_dir = sys.argv[1]
+    gtfs.load_real_time_data()
+    real_time_data = gtfs.real_time_data
+    gtfs.load_stops("{0}/stops.txt".format(gtfs_dir))
+    gtfs.load_stop_times("{0}/stop_times.txt".format(gtfs_dir))
 
-realtimeFile = getRealtimeFile("7cecfe7c2a37b4301cc351b57aaaed9f")
+    if args.htmlOutput is not None:
+        writer = Writer(open(args.htmlOutput,'w'), use_html=True)
+    else:
+        writer = Writer()
 
-feed_message = gtfs_realtime_pb2.FeedMessage()
-feed_message.ParseFromString(realtimeFile.read())
+    interested_stops = args.stations
+    if interested_stops is None:
+        raise RuntimeError('No stops supplied') 
+        return
 
-realtimeFile.close()
+    writer.start_write()
+    for stop in interested_stops:
+        trains = gtfs.get_upcoming_trains_at_stop(stop)
+        writer.write_header_row("{0}:".format(gtfs.get_stop(stop)))
 
-stops = loadStops(gtfs_dir + "/stops.txt")
-routes = loadRoutes(gtfs_dir + "/routes.txt")
-trips = loadTrips(gtfs_dir + "/trips.txt")
-#partialTrips = loadPartialTrips(gtfs_dir + "/trips.txt")
-stopTimes = loadStopTimes(gtfs_dir + "/stop_times.txt")
+        if len(trains) == 0:
+            writer.write_status_row("No data for this stop.","")
 
-#for stopTime in stopTimes:
-#	if stopTime[1] == "241" or stopTime[1] == "241N" or stopTime[1] == "241S":
-#		print trips[stopTime[0]]
-		
-#print stopTimes
+        for train_arrival in trains:
+            arrival = train_arrival[1]
+            seconds_from_now = arrival - int(time.time())
+            q, r = divmod(seconds_from_now, 60)
+            arrival_estimate = q + (0 if r is 0 else 1)
+            writer.write_status_row("{0} will arrive in {1} minute(s)".format(train_arrival[0].get_name(), arrival_estimate if arrival_estimate > 0 else 0), \
+                                    "Current status: {0}".format(train_arrival[0].get_status(gtfs)))
 
-interested_lines = ('2','5')
+    writer.end_write()
 
-for entity in feed_message.entity:
-	if entity.vehicle.trip.route_id in interested_lines:
-		printEntity(entity, stops, stopTimes)
+if __name__ == '__main__':
+    main()
 
 #End Main Program
