@@ -46,7 +46,7 @@ class TrainTrip:
             status = "incoming"
         return "{0} at {1}".format(status, stop_name)
 
-
+            
 
 class GtfsCollection:
     def __init__(self, api_key):

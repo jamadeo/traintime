@@ -24,6 +24,7 @@ def parse_args():
     parser.add_argument("-H", "--htmlOutput", help="Optionally output HTML to a specified file")
     return parser.parse_args()
 
+
 class Writer():
     def __init__(self, fp=sys.stdout, use_html=False):
         self.fp = fp
@@ -31,7 +32,9 @@ class Writer():
 
     def start_write(self):
         if self.use_html:
+            self.fp.write("<!DOCTYPE html>\n")
             self.fp.write("<table>\n")
+            self.fp.write('<link rel="stylesheet" href="styles.css">\n')
 
     def write_header_row(self, header_text):
         if self.use_html:
@@ -52,13 +55,7 @@ class Writer():
             self.fp.write("</table>\n")
 
 
-########################################################################
-# Main Program Begin
-########################################################################
-
-def main():
-    args = parse_args()
-    gtfs_dir = args.GTFSDirectory
+def write_arrival_board(gtfs_dir, interested_stops, htmlOutput=None):
     gtfs = GtfsCollection("7cecfe7c2a37b4301cc351b57aaaed9f")
 
     gtfs.load_real_time_data()
@@ -66,12 +63,11 @@ def main():
     gtfs.load_stops("{0}/stops.txt".format(gtfs_dir))
     gtfs.load_stop_times("{0}/stop_times.txt".format(gtfs_dir))
 
-    if args.htmlOutput is not None:
-        writer = Writer(open(args.htmlOutput,'w'), use_html=True)
+    if htmlOutput is not None:
+        writer = Writer(htmlOutput, use_html=True)
     else:
         writer = Writer()
 
-    interested_stops = args.stations
     if interested_stops is None:
         raise RuntimeError('No stops supplied') 
         return
@@ -91,8 +87,19 @@ def main():
             arrival_estimate = q + (0 if r is 0 else 1)
             writer.write_status_row("{0} will arrive in {1} minute(s)".format(train_arrival[0].get_name(), arrival_estimate if arrival_estimate > 0 else 0), \
                                     "Current status: {0}".format(train_arrival[0].get_status(gtfs)))
-
     writer.end_write()
+
+
+########################################################################
+# Main Program Begin
+########################################################################
+
+def main():
+    args = parse_args()
+    if args.htmlOutput is not None:
+        write_arrival_board(args.GTFSDirectory, args.stations, open(args.htmlOutput,'w'))
+    else:
+        write_arrival_board(args.GTFSDirectory, args.stations)
 
 if __name__ == '__main__':
     main()
