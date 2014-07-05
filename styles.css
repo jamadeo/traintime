@@ -1,0 +1,13 @@
+td, th {
+  /*border: 1px solid #999;*/
+  padding: 0.5rem;
+}
+
+th {
+	font-family: Helvetica, sans-serif;
+}
+
+td {
+	font-family: Helvetica, sans-serif;
+	background: hsl(150, 50%, 50%);
+}
