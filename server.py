@@ -14,6 +14,7 @@ sys.path.insert(0, vendor_dir)
 import web
 import time
 import model
+import json
 
 urls = (
     '/trains/(.*\\.css)', 'styles',
@@ -21,6 +22,7 @@ urls = (
 )
 
 render = web.template.render('templates')
+app_config = json.load(open('gtfs.config'))
 
 class cache:
     def __init__(self, threshold):
@@ -31,7 +33,7 @@ class cache:
     def get_content(self, train_stops):
         if (int(time.time()) - self.last_update) > self.threshold:
             self.last_update = int(time.time())
-            self.content = model.get_trains_for_stops('google_transit_2014_07_04', '7cecfe7c2a37b4301cc351b57aaaed9f', train_stops)
+            self.content = model.get_trains_for_stops('google_transit_2014_07_04', app_config['api_key'], train_stops)
         return self.content
 
 cache = cache(30)
