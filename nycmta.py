@@ -1,6 +1,4 @@
 import gtfs_realtime_pb2
-import time
-import datetime
 import csv
 import urllib2
 from pprint import pprint
@@ -54,16 +52,16 @@ class TrainTrip:
 class GtfsCollection:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.stops = dict()
-        self.routes = dict()
-        self.trips = dict()
-        self.stop_times = dict()
-        self.calender = dict()
-        self.calendar_dates = dict()
-        self.transfers = dict()
+        self.stops = {}
+        self.routes = {}
+        self.trips = {}
+        self.stop_times = {}
+        self.calender = {}
+        self.calendar_dates = {}
+        self.transfers = {}
 
-        self.trips = dict()
-        self.trips_by_stop = dict()
+        self.trips = {}
+        self.trips_by_stop = {}
 
 
     def load_stops(self, stopsFileName):
@@ -181,7 +179,7 @@ class GtfsCollection:
             return stop + direction
         except KeyError:
             return "[unknown stop]"
-            
+
     def __get_trip(self, trip_id, route_id):
         if trip_id not in self.trips:
             trip = TrainTrip(trip_id, route_id)

@@ -2,9 +2,9 @@ from nycmta import GtfsCollection, TrainTrip
 import collections
 import time
 
-def get_trains_for_stops(gtfs_dir, api_key, stops):
+def get_trains_for_stops(gtfs_dir, api_key, stops, sort=True):
     Station = collections.namedtuple('Station', ['name', 'trains'])
-    StatusRow = collections.namedtuple('StatusRow', ['arrival', 'status', 'route'])
+    StatusRow = collections.namedtuple('StatusRow', ['arrival', 'status', 'route', 'arrival_estimate'])
     ret_stops = []
 
     gtfs = GtfsCollection("7cecfe7c2a37b4301cc351b57aaaed9f")
@@ -27,8 +27,12 @@ def get_trains_for_stops(gtfs_dir, api_key, stops):
             #If the estimate is in the past, we suspect bad data and ignore.
             if arrival_estimate >= 0 or train.is_status_known:
                 station.trains.append(StatusRow("{0} will arrive in {1} minute(s)".format(train.get_name(), arrival_estimate if arrival_estimate > 0 else 0), \
-                                    "Current status: {0}".format(train.get_status(gtfs)), train.route_id))
+                                    "Current status: {0}".format(train.get_status(gtfs)), train.route_id, arrival_estimate))
+
+        if sort:
+            station.trains.sort(lambda trainA, trainB: int(trainA.arrival_estimate - trainB.arrival_estimate))
 
         ret_stops.append(station)
+
 
     return ret_stops
