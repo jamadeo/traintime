@@ -32,9 +32,12 @@ class TrainTrip:
     def get_name(self):
         return "{0} train".format(self.route_id)
 
+    def is_status_known(self):
+        return self.stop_id is not None and self.status is not None
+
     def get_status(self, gtfs_collection):
-        if self.stop_id is None or self.status is None:
-            return "has not started run"
+        if not self.is_status_known():
+            return "[unknown: probably has not started run]"
 
         stop_name = gtfs_collection.get_stop(self.stop_id)
 
@@ -178,48 +181,7 @@ class GtfsCollection:
             return stop + direction
         except KeyError:
             return "[unknown stop]"
-
-    def printEntity(self, entity, stops, stopTimes):
-        if entity.vehicle.trip.route_id != '':
-            try:
-                train = entity.vehicle.trip.route_id
-                stop = stops[entity.vehicle.stop_id]
-                stopName = stop['stop_name']
-                direction = entity.vehicle.trip.trip_id[10]
-                timediff = time.time() - entity.vehicle.timestamp
-
-                stopId = stop['parent_station'] if stop['parent_station'] is not None else stop.stop_id
-
-                status = ''
-                if entity.vehicle.current_status == gtfs_realtime_pb2.VehiclePosition.VehicleStopStatus.Value('IN_TRANSIT_TO'):
-                    status = "in transit"
-                elif entity.vehicle.current_status == gtfs_realtime_pb2.VehiclePosition.VehicleStopStatus.Value('STOPPED_AT'):
-                    status = "stopped"
-                elif entity.vehicle.current_status == gtfs_realtime_pb2.VehiclePosition.VehicleStopStatus.Value('INCOMING_AT'):
-                    status = "incoming"
-                print "{0} train is {1} at {2}, direction {3}, {4:.0f} seconds ago".format(train, status, stopName, direction, timediff)
-                
-            except RuntimeError as e:
-                print "Error", e
-            except AttributeError as e:
-                print "Attribute error", e
-            except:
-                print "Other error for entity:", entity
-                
-            try:
-                stopTime = stopTimes[(str(entity.vehicle.trip.trip_id), str(entity.vehicle.stop_id))]
-                print "\tScheduled Arrival:", stopTime['arrival_time'], ", Scheduled Departure:", stopTime['departure_time']
-            except KeyError as ke:
-                #print "Could not find scheduled stop time."
-                pass
-            except Exception as e:
-                #print "Error for entity", entity
-                print "Error:", e
-
-        # print entity.vehicle
-        # print entity.trip_update.trip.trip_id
-        # print trips[entity.trip_update.trip.trip_id]
-
+            
     def __get_trip(self, trip_id, route_id):
         if trip_id not in self.trips:
             trip = TrainTrip(trip_id, route_id)

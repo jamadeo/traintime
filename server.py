@@ -3,32 +3,32 @@
 import web
 import StringIO
 import time
-from gtfs_test import write_arrival_board
+import model
 
 urls = (
     '/trains/(.*\\.css)', 'styles',
     '/trains/(.*)', 'traintime'
 )
 
+render = web.template.render('templates')
+
 class cache:
     def __init__(self, threshold):
         self.threshold = threshold
         self.last_update = 0
-        self.content = ""
+        self.content = {}
 
     def get_content(self, train_stops):
         if (int(time.time()) - self.last_update) > self.threshold:
             self.last_update = int(time.time())
-            out_str = StringIO.StringIO()
-            write_arrival_board('google_transit_2014_07_04', train_stops.split(','), out_str)
-            self.content = out_str.getvalue()
+            self.content = model.get_trains_for_stops('google_transit_2014_07_04', "7cecfe7c2a37b4301cc351b57aaaed9f", train_stops)
         return self.content
 
 cache = cache(30)
 
 class traintime:
     def GET(self, train_stops):
-        return cache.get_content(train_stops)
+        return render.arrivals(cache.get_content(train_stops.split(',')))
 
 class styles:
     def GET(self, style):

@@ -1,0 +1,15 @@
+$def with (stations)
+
+<!-- template to render a table of upcoming trains, for use with web.py -->
+
+<!DOCTYPE html>
+<table>
+<link rel="stylesheet" href="styles.css">
+$for station in stations:
+    <th colspan="2"><h4>$station.name</h4></th>
+    $for train in station.trains:
+        <tr class="r$train.route">
+            <td>$train.arrival</td>
+            <td>$train.status</td>
+        <tr>
+</table>
