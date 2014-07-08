@@ -52,6 +52,8 @@ class TrainTrip:
 class GtfsCollection:
     def __init__(self, api_key):
         self.api_key = api_key
+
+        #Static data
         self.stops = {}
         self.routes = {}
         self.trips = {}
@@ -60,6 +62,7 @@ class GtfsCollection:
         self.calendar_dates = {}
         self.transfers = {}
 
+        #Real-time data
         self.trips = {}
         self.trips_by_stop = {}
 
@@ -75,6 +78,22 @@ class GtfsCollection:
 
         for row in reader:
             self.stops[row[stop_id_ix]] = {"stop_name" : row[stop_name_ix], "parent_station" : row[parent_station_ix]}
+
+    def get_supported_stops(self, supported_stops):
+        stops = []
+        for stop_id, stop in self.stops.iteritems():
+            if stop_id[0] not in supported_stops:
+                continue
+
+            if stop_id[-1] == 'N':
+                direction = ' (Northbound)'
+            elif stop_id[-1] == 'S':
+                direction = ' (Southbound)'
+            else:
+                continue
+
+            stops.append((stop_id, stop['stop_name'] + direction))
+        return stops
         
     def load_routes(self, routesFileName):
         f = open(routesFileName, "rb")
@@ -181,22 +200,11 @@ class GtfsCollection:
             return "[unknown stop]"
 
     def __get_trip(self, trip_id, route_id):
-        if trip_id not in self.trips:
-            trip = TrainTrip(trip_id, route_id)
-            self.trips[trip_id] = trip
-        else:
-            trip = self.trips[trip_id]
-            assert route_id == trip.route_id
-
+        trip = self.trips[trip_id] = self.trips.get(trip_id, TrainTrip(trip_id, route_id))
         return trip
 
     def __get_stop(self, stop_id):
-        if stop_id not in self.trips_by_stop:
-            stops = []
-            self.trips_by_stop[stop_id] = stops
-        else:
-            stops = self.trips_by_stop[stop_id]
-
+        stops = self.trips_by_stop[stop_id] = self.trips_by_stop.get(stop_id, [])
         return stops
 
     def __ingest_trip_update(self, trip_update):
@@ -219,8 +227,12 @@ class GtfsCollection:
             if entity.vehicle is not None:
                 self.__ingest_vehicle_status(entity.vehicle)
 
+    def __clear_real_time_data(self):
+        self.trips = {}
+        self.trips_by_stop = {}
 
     def load_real_time_data(self):
+        self.__clear_real_time_data()
         print "Fetching data from mta.info..."
         url = 'http://datamine.mta.info/mta_esi.php?key='+self.api_key
         real_time_data_file = urllib2.urlopen(url)
