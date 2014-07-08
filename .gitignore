@@ -1,2 +1,6 @@
 *.pyc
 *.config
+gtfs_test.py
+test.sh
+templates/__init__.py
+*sublime-workspace
