@@ -1,0 +1,15 @@
+$def with (stations)
+
+<!DOCTYPE html>
+<form action="/trains/" method="post">
+<div>
+<select name="stations" multiple size="15" id="stations">
+$for station_id, station_name in stations:
+    <option value="$station_id">$station_name</option> 
+</select>
+</div>
+
+<div class="button">
+    <button type="submit">Submit</button>
+</div>
+</form>

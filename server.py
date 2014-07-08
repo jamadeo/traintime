@@ -15,32 +15,28 @@ import web
 import time
 import model
 import json
+from web import form
 
 urls = (
-    '/trains/(.*\\.css)', 'styles',
-    '/trains/(.*)', 'traintime'
+    '/trains/?', 'index',
+    '/trains/(.+)', 'traintime'
 )
 
 render = web.template.render('templates')
 app_config = json.load(open('gtfs.config'))
+model.initialize(app_config['api_key'], app_config['gtfs_directory'])
 
-class cache:
-    def __init__(self, threshold):
-        self.threshold = threshold
-        self.last_update = 0
-        self.content = {}
+class index:
+    def GET(self):
+        return render.index(sorted(model.get_stops(), key=lambda stop:stop[1]))
 
-    def get_content(self, train_stops):
-        if (int(time.time()) - self.last_update) > self.threshold:
-            self.last_update = int(time.time())
-            self.content = model.get_trains_for_stops('google_transit_2014_07_04', app_config['api_key'], train_stops)
-        return self.content
-
-cache = cache(30)
+    def POST(self):
+        user_input = web.input(stations=[])
+        raise web.seeother('/trains/' + ','.join(user_input.stations))
 
 class traintime:
     def GET(self, train_stops):
-        return render.arrivals(cache.get_content(train_stops.split(',')))
+        return render.arrivals(model.get_trains_for_stops(train_stops.split(',')))
 
 class styles:
     def GET(self, style):
@@ -52,10 +48,3 @@ class styles:
 app = web.application(urls, globals())
 
 app = app.gaerun()
-
-# def main():
-#     app = web.application(urls, globals())
-#     app.run()
-
-# if __name__ == '__main__':
-#     main()
