@@ -14,8 +14,10 @@ class GtfsDataCache:
         self.collection = GtfsCollection(self.api_key)
 
     def __load(self):
+        print "Loading GtfsDataCache. Last loaded {0}".format(self.timestamp)
         self.collection.load_real_time_data()
         self.collection.load_stops("{0}/stops.txt".format(self.gtfs_dir))
+        self.timestamp = int(time.time())
 
     def getCollection(self):
         if (int(time.time()) - self.timestamp) > self.time_threshold:
@@ -29,9 +31,10 @@ class GtfsDataCache:
 
 cache = GtfsDataCache()
 
-def initialize(api_key, gtfs_dir):
+def initialize(api_key, gtfs_dir, cache_time):
     cache.api_key = api_key
     cache.gtfs_dir = gtfs_dir
+    cache.time_threshold = cache_time
     cache.initialize()
 
 def get_stops():
