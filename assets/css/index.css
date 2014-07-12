@@ -1,0 +1,27 @@
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+}
+
+.form-stationselect {
+  max-width: 700px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-stationselect .form-stationselect-heading {
+  margin-bottom: 10px;
+}
+.form-stationselect {
+  font-weight: normal;
+}
+.form-stationselect .form-control-train .button{
+  position: relative;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.select2-container-multi .select2-choices {
+    border-radius: 5px;
+}

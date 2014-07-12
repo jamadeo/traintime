@@ -1,17 +1,44 @@
 $def with (stations)
 
 <!DOCTYPE html>
-<form action="/trains/" method="post">
-<div>
-<select name="stations" multiple size="30" id="stations">
-$for station_id, station_name in stations:
-    <option value="$station_id">$station_name</option> 
-</select>
-</div>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TrainTime</title>
 
-<div class="button">
-    <button type="submit">Submit</button>
-</div>
-</form>
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/index.css" rel="stylesheet">
+    <!-- Select2 -->
+    <link href="../assets/css/select2.css" rel="stylesheet">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
-Shift-click to range-select, control-click to multi-select
+    <!-- select2 -->
+    <script src="../assets/js/select2.js"></script>
+    <script src="../assets/js/train-chooser.js"></script>
+  </head>
+  <body>
+
+    <div class="container">
+      <form action="/trains/" method="post" class="form-stationselect">
+        <h2 class="form-trainselect-heading">Choose your train stations</h2>
+        <div>
+          <select class="form-control-train" name="stations" multiple id="stations-select" style="width: 100%;">
+          $for station_id, station_name in stations:
+              <option value="$station_id">$station_name</option> 
+          </select>
+        </div>
+      
+        <div class="button">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+    
+  </body>
+</html>

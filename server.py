@@ -18,6 +18,7 @@ import json
 from web import form
 
 urls = (
+    '/', 'index',
     '/trains/?', 'index',
     '/trains/(.+)', 'traintime'
 )

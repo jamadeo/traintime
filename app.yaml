@@ -5,12 +5,13 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /
-  static_files: index.html
-  upload: index.html
 - url: /index\.html
   static_files: index.html
   upload: index.html
+- url: /assets/js
+  static_dir: assets/js
+- url: /assets/css
+  static_dir: assets/css
 - url: /stylesheets
   static_dir: stylesheets
 - url: /.*

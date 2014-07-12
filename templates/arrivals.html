@@ -1,13 +1,40 @@
 $def with (stations)
 
 <!DOCTYPE html>
-<table>
-<link rel="stylesheet" href="../stylesheets/arrivals.css">
-$for station in stations:
-    <th colspan="2"><h4>$station.name</h4></th>
-    $for train in station.trains:
-        <tr class="r$train.route">
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TrainTime</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/css/arrivals.css">
+  </head>
+  <body>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1>Train status</h1>
+      </div>
+
+      <table class="table">
+      $for station in stations:
+        <th colspan="2"><h4>$station.name</h4></th>
+        $for train in station.trains:
+          <tr class="r$train.route">
             <td>$train.arrival</td>
             <td>$train.status</td>
-        <tr>
-</table>
+          <tr>
+      </table>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  </body>
+</html>

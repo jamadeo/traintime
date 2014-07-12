@@ -1,0 +1,1 @@
+$(document).ready(function() { $("#stations-select").select2(); });
