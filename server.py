@@ -25,7 +25,8 @@ urls = (
 
 render = web.template.render('templates')
 app_config = json.load(open('gtfs.config'))
-model.initialize(app_config['api_key'], app_config['gtfs_directory'], app_config['cache_max_age'])
+api_key = json.load(open('mta_api_key'))['api_key']
+model.initialize(api_key, app_config['gtfs_directory'], app_config['cache_max_age'])
 
 class index:
     def GET(self):
