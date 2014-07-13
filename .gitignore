@@ -1,5 +1,5 @@
 *.pyc
-*.config
+mta_api_key
 gtfs_test.py
 test.sh
 templates/__init__.py
