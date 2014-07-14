@@ -12,6 +12,8 @@ handlers:
   static_dir: assets/js
 - url: /assets/css
   static_dir: assets/css
+- url: /assets/select2
+  static_dir: assets/select2
 - url: /stylesheets
   static_dir: stylesheets
 - url: /.*
