@@ -21,13 +21,10 @@ $def with (stations)
       <div class="page-header">
         <h1>Train status</h1>
       </div>
-      <div>
-        <a href="../trains">Choose other stations</a>
-      </div>
 
       <table class="table">
       $for station in stations:
-        <th colspan="3"><h4>$station.name</h4></th>
+        <th colspan="3"><h4>$station.name<small><a href="../trains"> Choose other stations</a></small></h4></th>
         <tr class="header_row">
           <th class="route_id">Train</th>
           <th class="arrival_time">Time to Arrival</th>

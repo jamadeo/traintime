@@ -21,6 +21,17 @@ tr {
     font-family: Helvetica, sans-serif;
 }
 
+th.route_id {
+    max-width: 25px;
+    text-align: center;
+    font-weight: bold;
+}
+
+th.arrival_time {
+    text-align: center;
+    font-weight: bold;
+}
+
 td.route_id {
     text-align: center;
     font-weight: bold;
