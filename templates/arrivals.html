@@ -7,7 +7,6 @@ $def with (stations)
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TrainTime</title>
-
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 
@@ -15,19 +14,30 @@ $def with (stations)
   </head>
   <body>
 
+
+
     <div class="container">
 
       <div class="page-header">
         <h1>Train status</h1>
       </div>
+      <div>
+        <a href="../trains">Choose other stations</a>
+      </div>
 
       <table class="table">
       $for station in stations:
-        <th colspan="2"><h4>$station.name</h4></th>
+        <th colspan="3"><h4>$station.name</h4></th>
+        <tr class="header_row">
+          <td class="route_id">Train</td>
+          <td class="arrival_time">Time to Arrival</td>
+          <td class="current_status">Current Status</td>
+        </tr>
         $for train in station.trains:
-          <tr class="r$train.route">
-            <td>$train.arrival</td>
-            <td>$train.status</td>
+          <tr class="r$train.arrival_estimate_class">
+            <td class="route_id route$train.route">$train.unicode_route</td>
+            <td class="arrival_time">$train.arrival_string</td>
+            <td class="current_status">$train.status_string</td>
           <tr>
       </table>
     </div>

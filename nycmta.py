@@ -35,16 +35,16 @@ class TrainTrip:
 
     def get_status(self, gtfs_collection):
         if not self.is_status_known():
-            return "[unknown: probably has not started run]"
+            return "Unavailable"
 
         stop_name = gtfs_collection.get_stop(self.stop_id)
 
         if self.status == gtfs_realtime_pb2.VehiclePosition.VehicleStopStatus.Value('IN_TRANSIT_TO'):
-            status = "in transit"
+            status = "In transit"
         elif self.status == gtfs_realtime_pb2.VehiclePosition.VehicleStopStatus.Value('STOPPED_AT'):
-            status = "stopped"
+            status = "Stopped"
         elif self.status == gtfs_realtime_pb2.VehiclePosition.VehicleStopStatus.Value('INCOMING_AT'):
-            status = "incoming"
+            status = "Incoming"
         return "{0} at {1}".format(status, stop_name)
 
             

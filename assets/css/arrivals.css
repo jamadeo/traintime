@@ -1,26 +1,85 @@
 body {
-  padding-top: 0px;
-  padding-bottom: 40px;
-  background-color: #eee;
+    padding-top: 0px;
+    padding-bottom: 40px;
+    background-color: #eee;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
 }
 
 td, th {
-  /*border: 1px solid #999;*/
-  padding: 0.5rem;
+    /*border: 1px solid #999;*/
+    padding: 0.5rem;
 }
 
 th {
-	font-family: Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
 }
 
 tr {
     font-family: Helvetica, sans-serif;
 }
 
-tr.r1, tr.r2, tr.r3 {
-	background: rgba(255,0,0,0.25);
+td.route_id {
+    max-width: 20px;
+    text-align: center;
+    font-weight: bold;
 }
 
-tr.r4, tr.r5, tr.r6 {
-    background: rgba(0,255,0,0.25);;
+td.arrival_time {
+    max-width: 50px;
+    text-align: center;
+}
+
+tr.header_row {
+    font-weight: bold;
+}
+
+tr.r1 {
+    background: rgba(163,225,244,0.1);
+}
+
+tr.r2 {
+    background: rgba(163,225,244,0.2);
+}
+
+tr.r3 {
+    background: rgba(163,225,244,0.3);
+}
+
+tr.r4 {
+    background: rgba(163,225,244,0.4);
+}
+
+tr.r5 {
+    background: rgba(163,225,244,0.5);
+}
+
+tr.r6 {
+    background: rgba(163,225,244,0.6);
+}
+
+tr.r7 {
+    background: rgba(163,225,244,0.7);
+}
+
+tr.r8 {
+    background: rgba(163,225,244,0.8);
+}
+
+tr.r9 {
+    background: rgba(163,225,244,0.9);
+}
+
+tr.r10 {
+    background: rgba(163,225,244,1.0);
+}
+
+td.route1, td.route2, td.route3 {
+    color: red;
+}
+
+td.route4, td.route5, td.route6 {
+    color: green;
 }

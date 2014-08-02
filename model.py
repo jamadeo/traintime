@@ -41,12 +41,25 @@ def get_stops():
     cache.assertInitialized()
     return cache.getCollection().get_supported_stops(['1', '2', '3', '4', '5', '6'])
 
-
 def get_trains_for_stops(stops, sort=True):
     cache.assertInitialized()
 
+    unicode_map = {
+        '1' : u'\u2460',
+        '2' : u'\u2461',
+        '3' : u'\u2462',
+        '4' : u'\u2463',
+        '5' : u'\u2464',
+        '6' : u'\u2465'
+    }
+
     Station = collections.namedtuple('Station', ['name', 'trains'])
-    StatusRow = collections.namedtuple('StatusRow', ['arrival', 'status', 'route', 'arrival_estimate'])
+    StatusRow = collections.namedtuple('StatusRow', ['arrival_string',
+                                                     'status_string',
+                                                     'route',
+                                                     'arrival_estimate',
+                                                     'arrival_estimate_class',
+                                                     'unicode_route'])
     ret_stops = []
 
     gtfs = cache.getCollection()
@@ -63,9 +76,21 @@ def get_trains_for_stops(stops, sort=True):
             arrival_estimate = q + (0 if r is 0 else 1)
 
             #If the estimate is in the past, we suspect bad data and ignore.
-            if arrival_estimate >= 0 or train.is_status_known:
-                station.trains.append(StatusRow("{0} will arrive in {1} minute(s)".format(train.get_name(), arrival_estimate if arrival_estimate > 0 else 0), \
-                                    "Current status: {0}".format(train.get_status(gtfs)), train.route_id, arrival_estimate))
+            if arrival_estimate >= 0 or train.is_status_known():
+                route = train.get_name()
+                arrival_string = "{0} minutes".format(arrival_estimate) if arrival_estimate > 1 else \
+                                 "1 minute" if arrival_estimate == 1 else \
+                                 "Now arriving" if arrival_estimate == 0 else \
+                                 "Unavailable"
+
+                status_string = train.get_status(gtfs)
+
+                station.trains.append(StatusRow(arrival_string,
+                                                status_string,
+                                                train.route_id,
+                                                arrival_estimate,
+                                                min(arrival_estimate, 10),
+                                                unicode_map[train.route_id]))
 
         if sort:
             station.trains.sort(lambda trainA, trainB: int(trainA.arrival_estimate - trainB.arrival_estimate))
