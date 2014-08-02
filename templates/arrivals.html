@@ -29,9 +29,9 @@ $def with (stations)
       $for station in stations:
         <th colspan="3"><h4>$station.name</h4></th>
         <tr class="header_row">
-          <td class="route_id">Train</td>
-          <td class="arrival_time">Time to Arrival</td>
-          <td class="current_status">Current Status</td>
+          <th class="route_id">Train</th>
+          <th class="arrival_time">Time to Arrival</th>
+          <th class="current_status">Current Status</th>
         </tr>
         $for train in station.trains:
           <tr class="r$train.arrival_estimate_class">
