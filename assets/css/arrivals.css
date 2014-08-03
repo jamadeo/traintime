@@ -1,10 +1,18 @@
+@media (max-width: @screen-xs) {
+    body{font-size: 10px;}
+}
+
+@media (max-width: @screen-sm) {
+    body{font-size: 14px;}
+}
+
 body {
     padding-top: 0px;
     padding-bottom: 40px;
     background-color: #eee;
 }
 
-h1, h2 {
+.page-header > h2, .page-header > h6 {
     text-align: center;
 }
 
@@ -12,87 +20,50 @@ h1, h2 {
     margin: 20px 0 10px;
 }
 
-td, th {
-    /*border: 1px solid #999;*/
-    padding: 0.5rem;
+.panel > .arrive-color1 {
+    background-color: rgba(163,225,244,0.1);
 }
 
-th {
-    font-family: Helvetica, sans-serif;
+.panel > .arrive-color2 {
+    background-color: rgba(163,225,244,0.2);
 }
 
-tr {
-    font-family: Helvetica, sans-serif;
+.panel > .arrive-color3 {
+    background-color: rgba(163,225,244,0.3);
 }
 
-th.route_id {
-    max-width: 25px;
-    text-align: center;
-    font-weight: bold;
+.panel > .arrive-color4 {
+    background-color: rgba(163,225,244,0.4);
 }
 
-th.arrival_time {
-    text-align: center;
-    font-weight: bold;
+.panel > .arrive-color5 {
+    background-color: rgba(163,225,244,0.5);
 }
 
-td.route_id {
-    text-align: center;
-    font-weight: bold;
+.panel > .arrive-color6 {
+    background-color: rgba(163,225,244,0.6);
 }
 
-td.arrival_time {
-    text-align: center;
+.panel > .arrive-color7 {
+    background-color: rgba(163,225,244,0.7);
 }
 
-tr.header_row {
-    font-weight: bold;
+.panel > .arrive-color8 {
+    background-color: rgba(163,225,244,0.8);
 }
 
-tr.r1 {
-    background: rgba(163,225,244,0.1);
+.panel > .arrive-color9 {
+    background-color: rgba(163,225,244,0.9);
 }
 
-tr.r2 {
-    background: rgba(163,225,244,0.2);
+.panel > .arrive-color10 {
+    background-color: rgba(163,225,244,1.0);
 }
 
-tr.r3 {
-    background: rgba(163,225,244,0.3);
-}
-
-tr.r4 {
-    background: rgba(163,225,244,0.4);
-}
-
-tr.r5 {
-    background: rgba(163,225,244,0.5);
-}
-
-tr.r6 {
-    background: rgba(163,225,244,0.6);
-}
-
-tr.r7 {
-    background: rgba(163,225,244,0.7);
-}
-
-tr.r8 {
-    background: rgba(163,225,244,0.8);
-}
-
-tr.r9 {
-    background: rgba(163,225,244,0.9);
-}
-
-tr.r10 {
-    background: rgba(163,225,244,1.0);
-}
-
-td.route1, td.route2, td.route3 {
+.route1, .route2, .route3 {
     color: red;
 }
 
-td.route4, td.route5, td.route6 {
+.route4, .route5, .route6 {
     color: green;
 }

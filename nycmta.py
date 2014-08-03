@@ -24,8 +24,14 @@ class TrainTrip:
         if self.status_timestamp is None or timestamp > self.status_timestamp:
             self.set_status(stop_id, status, timestamp)
 
+    def get_stops(self):
+        return self.stops
+
     def set_stops(self, stops):
         self.stops = stops
+
+    def add_stop(self, stop):
+        self.stops.append(stop)
 
     def get_name(self):
         return "{0} train".format(self.route_id)
@@ -37,7 +43,7 @@ class TrainTrip:
         if not self.is_status_known():
             return "Unavailable"
 
-        stop_name = gtfs_collection.get_stop(self.stop_id)
+        stop_name = gtfs_collection.get_stop(self.stop_id, False)
 
         if self.status == gtfs_realtime_pb2.VehiclePosition.VehicleStopStatus.Value('IN_TRANSIT_TO'):
             status = "In transit"
@@ -185,7 +191,7 @@ class GtfsCollection:
         for row in reader:
             self.transfers[(row[from_stop_id_ix], row[to_stop_id_ix])] = {"transfer_type" : row[transfer_type_ix]}
 
-    def get_stop(self, stop_id):
+    def get_stop(self, stop_id, append_direction=True):
         try:
             stop = self.stops[stop_id]['stop_name']
 
@@ -195,7 +201,11 @@ class GtfsCollection:
                 direction = ' (Northbound)'
             else:
                 direction = ''
-            return stop + direction
+
+            if append_direction:
+                return stop + direction
+            else:
+                return stop
         except KeyError:
             return "[unknown stop]"
 
@@ -213,8 +223,9 @@ class GtfsCollection:
         for stop in trip_update.stop_time_update:
             if stop.stop_id is not None:
                 time = stop.arrival.time if stop.arrival is not None else stop.departure.time
-                stops = self.__get_stop(stop.stop_id)
-                stops.append((trip, time))
+                trip.add_stop((stop.stop_id, time))
+                station = self.__get_stop(stop.stop_id)
+                station.append((trip, time))
 
     def __ingest_vehicle_status(self, vehicle):
         trip = self.__get_trip(vehicle.trip.trip_id, vehicle.trip.route_id)
@@ -245,6 +256,11 @@ class GtfsCollection:
 
     def get_upcoming_trains_at_stop(self, stop):
         return self.__get_stop(stop)
+
+    def get_stops_for_trip(self, trip_id):
+        trip = self.trips[trip_id]
+        return trip.get_stops()
+
     
     # def get_train_status(self, train):
     #     trip_id = 

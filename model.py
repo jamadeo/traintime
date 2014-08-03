@@ -1,6 +1,8 @@
 from nycmta import GtfsCollection, TrainTrip
 import collections
 import time
+from datetime import datetime
+import pytz
 
 class GtfsDataCache:
     def __init__(self):
@@ -41,7 +43,7 @@ def get_stops():
     cache.assertInitialized()
     return cache.getCollection().get_supported_stops(['1', '2', '3', '4', '5', '6'])
 
-def get_trains_for_stops(stops, sort=True):
+def get_trains_for_stops(stops, max_later_stops=10, sort=True):
     cache.assertInitialized()
 
     unicode_map = {
@@ -53,13 +55,15 @@ def get_trains_for_stops(stops, sort=True):
         '6' : u'\u2465'
     }
 
-    Station = collections.namedtuple('Station', ['name', 'trains'])
+    Station = collections.namedtuple('Station', ['id', 'name', 'trains'])
     StatusRow = collections.namedtuple('StatusRow', ['arrival_string',
                                                      'status_string',
                                                      'route',
                                                      'arrival_estimate',
                                                      'arrival_estimate_class',
-                                                     'unicode_route'])
+                                                     'unicode_route',
+                                                     'trip_id',
+                                                     'upcoming_stops'])
     ret_stops = []
 
     gtfs = cache.getCollection()
@@ -68,7 +72,7 @@ def get_trains_for_stops(stops, sort=True):
         trains = gtfs.get_upcoming_trains_at_stop(stop)
         stop_name = gtfs.get_stop(stop)
 
-        station = Station(stop_name, [])
+        station = Station(stop, stop_name, [])
 
         for train, arrival in trains:
             seconds_from_now = arrival - int(time.time())
@@ -90,10 +94,44 @@ def get_trains_for_stops(stops, sort=True):
                                                 train.route_id,
                                                 arrival_estimate,
                                                 min(arrival_estimate, 10),
-                                                unicode_map[train.route_id]))
+                                                unicode_map[train.route_id],
+                                                train.trip_id,
+                                                get_stops_for_trip(train.trip_id, max_later_stops)))
 
         if sort:
             station.trains.sort(lambda trainA, trainB: int(trainA.arrival_estimate - trainB.arrival_estimate))
 
         ret_stops.append(station)
     return ret_stops
+
+def get_stops_for_trip(train, bound=-1):
+    cache.assertInitialized()
+    gtfs = cache.getCollection()
+
+    StatusRow = collections.namedtuple('StatusRow', ['stop_name',
+                                                     'arrival_time',
+                                                     'arrival_string'])
+
+    stops = []
+    total = 0
+    for stop_id, arrival_time_epoch in gtfs.get_stops_for_trip(train):
+        if total == bound:
+            break
+
+        eastern = pytz.timezone('US/Eastern')
+        arrival_time = pytz.utc.localize(datetime.fromtimestamp(arrival_time_epoch)).astimezone(eastern)
+        
+        seconds_from_now = arrival_time_epoch - int(time.time())
+        q, r = divmod(seconds_from_now, 60)
+        arrival_estimate = q + (0 if r is 0 else 1)
+
+        stop_name = gtfs.get_stop(stop_id, False)
+        arrival_string = "{0} minutes".format(arrival_estimate) if arrival_estimate > 1 else \
+                         "1 minute" if arrival_estimate == 1 else \
+                         "Now" if arrival_estimate == 0 else \
+                         "Unavailable"
+
+        stops.append(StatusRow(stop_name, arrival_time.strftime('%I:%M %p'), arrival_string))
+        total = total+1
+
+    return stops

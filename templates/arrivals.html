@@ -10,7 +10,7 @@ $def with (stations)
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="../assets/css/arrivals.css">
+    <link href="../assets/css/arrivals.css" rel="stylesheet">
   </head>
   <body>
 
@@ -18,23 +18,41 @@ $def with (stations)
 
       <div class="page-header">
         <h2>Train status</h2>
+        <h6>Click a row to expand timetable</h6>
       </div>
 
-      <table class="table">
+      <div class="panel-group" id="trains-accordion">
+      $ collapse_id=0
       $for station in stations:
         <th colspan="3"><h4>$station.name<small><a href="../trains"> Choose other stations</a></small></h4></th>
-        <tr class="header_row">
-          <th class="route_id">Train</th>
-          <th class="arrival_time">Time to Arrival</th>
-          <th class="current_status">Current Status</th>
-        </tr>
         $for train in station.trains:
-          <tr class="r$train.arrival_estimate_class">
-            <td class="route_id route$train.route">$train.unicode_route</td>
-            <td class="arrival_time">$train.arrival_string</td>
-            <td class="current_status">$train.status_string</td>
-          <tr>
-      </table>
+          $ collapse_id=collapse_id+1
+          <div class="panel panel-default">
+            <div class="panel-heading arrive-color$train.arrival_estimate_class">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#trains-accordion" href="#collapse$collapse_id">
+                  <div class="row">
+                    <div class="col-xs-1 route$train.route">$train.unicode_route</div>
+                    <div class="col-xs-3 col-sm-2">$train.arrival_string</div>
+                    <div class="col-xs-8 col-sm-9">$train.status_string</div>
+                  </div>
+                </a>
+              </h4>
+            </div>
+            <div id="collapse$collapse_id" class="panel-collapse collapse">
+              <div class="panel-body">
+                <table class="table table-hover">
+                $for stop in train.upcoming_stops:
+                  <tr class="row timetablerow">
+                    <td class="col-xs-4">$stop.stop_name</td>
+                    <td class="col-xs-3 text-center">$stop.arrival_time</td>
+                    <td class="col-xs-3">$stop.arrival_string</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+      </div>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
