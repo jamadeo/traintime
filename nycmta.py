@@ -1,7 +1,7 @@
 import gtfs_realtime_pb2
 import csv
 import urllib2
-from pprint import pprint
+import logging
 
 class TrainTrip:
     def __init__(self, trip_id, route_id):
@@ -244,10 +244,10 @@ class GtfsCollection:
 
     def load_real_time_data(self):
         self.__clear_real_time_data()
-        print "Fetching data from mta.info..."
+        logging.info("Fetching data from mta.info...")
         url = 'http://datamine.mta.info/mta_esi.php?key='+self.api_key
         real_time_data_file = urllib2.urlopen(url)
-        print "Parsing data..."
+        logging.info("Parsing data...")
         real_time_data = real_time_data_file.read()
         self.real_time_data  = gtfs_realtime_pb2.FeedMessage()
         self.real_time_data.ParseFromString(real_time_data)
