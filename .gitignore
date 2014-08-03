@@ -5,3 +5,5 @@ test.sh
 templates/__init__.py
 *sublime-workspace
 *.sublime-project
+select2.css
+test_model.py
