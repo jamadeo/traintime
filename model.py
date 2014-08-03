@@ -3,6 +3,7 @@ import collections
 import time
 from datetime import datetime
 import pytz
+import logging
 
 class GtfsDataCache:
     def __init__(self):
@@ -16,7 +17,7 @@ class GtfsDataCache:
         self.collection = GtfsCollection(self.api_key)
 
     def __load(self):
-        print "Loading GtfsDataCache. Last loaded {0}".format(self.timestamp)
+        logging.info("Loading GtfsDataCache. Last loaded {0}".format(self.timestamp))
         self.collection.load_real_time_data()
         self.collection.load_stops("{0}/stops.txt".format(self.gtfs_dir))
         self.timestamp = int(time.time())
