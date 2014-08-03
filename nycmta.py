@@ -41,7 +41,7 @@ class TrainTrip:
 
     def get_status(self, gtfs_collection):
         if not self.is_status_known():
-            return "Unavailable"
+            return "Status Unavailable"
 
         stop_name = gtfs_collection.get_stop(self.stop_id, False)
 

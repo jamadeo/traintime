@@ -110,7 +110,8 @@ def get_stops_for_trip(train, bound=-1):
 
     StatusRow = collections.namedtuple('StatusRow', ['stop_name',
                                                      'arrival_time',
-                                                     'arrival_string'])
+                                                     'arrival_string',
+                                                     'arrival_time_epoch'])
 
     stops = []
     total = 0
@@ -131,7 +132,10 @@ def get_stops_for_trip(train, bound=-1):
                          "Now" if arrival_estimate == 0 else \
                          "Unavailable"
 
-        stops.append(StatusRow(stop_name, arrival_time.strftime('%I:%M %p'), arrival_string))
+        stops.append(StatusRow(stop_name,
+                               arrival_time.strftime('%I:%M %p') if arrival_time_epoch != 0 else "",
+                               arrival_string,
+                               arrival_time_epoch))
         total = total+1
 
     return stops
