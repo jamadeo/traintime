@@ -24,7 +24,7 @@ $def with (stations)
       <div class="panel-group" id="trains-accordion">
       $ collapse_id=0
       $for station in stations:
-        <th colspan="3"><h4>$station.name<small><a href="../trains"> Choose other stations</a></small></h4></th>
+        <th colspan="3"><h4>$station.name<small> <a href="../trains">Choose other stations</a></small></h4></th>
         $for train in station.trains:
           $ collapse_id=collapse_id+1
           <div class="panel panel-default">
@@ -44,7 +44,7 @@ $def with (stations)
                 <table class="table table-hover">
                 $for stop in train.upcoming_stops:
                   <tr class="row timetablerow">
-                    <td class="col-xs-4">$stop.stop_name</td>
+                    <td class="col-xs-4"><a href="../trains/$stop.stop_id">$stop.stop_name</a></td>
                     <td class="col-xs-3 text-center">$stop.arrival_time</td>
                     <td class="col-xs-3">$stop.arrival_string</td>
                   </tr>
