@@ -90,12 +90,18 @@ def get_trains_for_stops(stops, max_later_stops=10, sort=True):
 
                 status_string = train.get_status(gtfs)
 
+                route_symbol = ""
+                try:
+                    route_symbol = unicode_map[train.route_id]
+                except KeyError:
+                    route_symbol = train.route_id
+
                 station.trains.append(StatusRow(arrival_string,
                                                 status_string,
                                                 train.route_id,
                                                 arrival_estimate,
                                                 min(arrival_estimate, 10),
-                                                unicode_map[train.route_id],
+                                                route_symbol,
                                                 train.trip_id,
                                                 get_stops_for_trip(train.trip_id, max_later_stops)))
 
@@ -110,6 +116,7 @@ def get_stops_for_trip(train, bound=-1):
     gtfs = cache.getCollection()
 
     StatusRow = collections.namedtuple('StatusRow', ['stop_name',
+                                                     'stop_id',
                                                      'arrival_time',
                                                      'arrival_string',
                                                      'arrival_time_epoch'])
@@ -134,6 +141,7 @@ def get_stops_for_trip(train, bound=-1):
                          "Unavailable"
 
         stops.append(StatusRow(stop_name,
+                               stop_id,
                                arrival_time.strftime('%I:%M %p') if arrival_time_epoch != 0 else "",
                                arrival_string,
                                arrival_time_epoch))
