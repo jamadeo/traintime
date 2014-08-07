@@ -8,21 +8,33 @@ class TrainTrip:
         self.trip_id = trip_id
         self.route_id = route_id
         self.stop_id = None
+        self.stop_sequence = 0
         self.status = None
         self.status_timestamp = None
         self.stops = []
 
     def __repr__(self):
-        return "[trip_id:{0}, route_id:{1}, stop:{2}, status:{3}]".format(self.trip_id, self.route_id, self.stop_id, self.status)
+        return "[trip_id:{0}, " \
+                "route_id:{1}, " \
+                "stop:{2}, " \
+                "status:{3}, " \
+                "stop sequence:{4}, " \
+                "stops:{5}]".format(self.trip_id,
+                                    self.route_id,
+                                    self.stop_id,
+                                    self.status,
+                                    self.stop_sequence,
+                                    self.stops)
 
-    def set_status(self, stop_id, status, timestamp):
+    def set_status(self, stop_id, stop_sequence, status, timestamp):
         self.stop_id = stop_id
+        self.stop_sequence = stop_sequence
         self.status = status
         self.status_timestamp = timestamp
 
-    def update_status(self, stop_id, status, timestamp):
+    def update_status(self, stop_id, stop_sequence, status, timestamp):
         if self.status_timestamp is None or timestamp > self.status_timestamp:
-            self.set_status(stop_id, status, timestamp)
+            self.set_status(stop_id, stop_sequence, status, timestamp)
 
     def get_stops(self):
         return self.stops
@@ -40,6 +52,10 @@ class TrainTrip:
         return self.stop_id is not None and self.status is not None
 
     def get_status(self, gtfs_collection):
+        if self.stop_id == '':
+            logging.error("Traintrip {0} does not have a stop_id! Setting to {1}".format(self, self.stops[0][0]))
+            self.stop_id = self.stops[0][0]
+
         if not self.is_status_known():
             return "Status Unavailable"
 
@@ -207,6 +223,7 @@ class GtfsCollection:
             else:
                 return stop
         except KeyError:
+            logging.error("Could not find a stop for stop_id={0}".format(stop_id))
             return "[unknown stop]"
 
     def __get_trip(self, trip_id, route_id):
@@ -229,10 +246,10 @@ class GtfsCollection:
 
     def __ingest_vehicle_status(self, vehicle):
         trip = self.__get_trip(vehicle.trip.trip_id, vehicle.trip.route_id)
-        trip.update_status(vehicle.stop_id, vehicle.current_status, vehicle.timestamp)
+        trip.update_status(vehicle.stop_id, vehicle.current_stop_sequence, vehicle.current_status, vehicle.timestamp)
 
-    def __ingest_real_time_data(self):
-        for entity in self.real_time_data.entity:
+    def __ingest_real_time_data(self, real_time_data):
+        for entity in real_time_data.entity:
             if entity.trip_update is not None:
                 self.__ingest_trip_update(entity.trip_update)
             if entity.vehicle is not None:
@@ -242,17 +259,20 @@ class GtfsCollection:
         self.trips = {}
         self.trips_by_stop = {}
 
-    def load_real_time_data(self):
-        self.__clear_real_time_data()
-        logging.info("Fetching data from mta.info...")
-        url = 'http://datamine.mta.info/mta_esi.php?key='+self.api_key
+    def __fetch_and_ingest_from_url(self, url):
         real_time_data_file = urllib2.urlopen(url)
         logging.info("Parsing data...")
         real_time_data = real_time_data_file.read()
-        self.real_time_data  = gtfs_realtime_pb2.FeedMessage()
-        self.real_time_data.ParseFromString(real_time_data)
+        real_time_data_obj = gtfs_realtime_pb2.FeedMessage()
+        real_time_data_obj.ParseFromString(real_time_data)
         real_time_data_file.close()
-        self.__ingest_real_time_data()
+        self.__ingest_real_time_data(real_time_data_obj)
+
+    def load_real_time_data(self):
+        self.__clear_real_time_data()
+        logging.info("Fetching data from mta.info...")
+        self.__fetch_and_ingest_from_url('http://datamine.mta.info/mta_esi.php?key='+self.api_key)
+        self.__fetch_and_ingest_from_url('http://datamine.mta.info/mta_esi.php?key='+self.api_key+'&feed_id=2')
 
     def get_upcoming_trains_at_stop(self, stop):
         return self.__get_stop(stop)
@@ -260,7 +280,3 @@ class GtfsCollection:
     def get_stops_for_trip(self, trip_id):
         trip = self.trips[trip_id]
         return trip.get_stops()
-
-    
-    # def get_train_status(self, train):
-    #     trip_id = 

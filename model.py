@@ -42,7 +42,7 @@ def initialize(api_key, gtfs_dir, cache_time):
 
 def get_stops():
     cache.assertInitialized()
-    return cache.getCollection().get_supported_stops(['1', '2', '3', '4', '5', '6'])
+    return cache.getCollection().get_supported_stops(['1', '2', '3', '4', '5', '6', 'L'])
 
 def get_trains_for_stops(stops, max_later_stops=10, sort=True):
     cache.assertInitialized()
