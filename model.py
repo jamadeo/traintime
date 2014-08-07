@@ -53,8 +53,7 @@ def get_trains_for_stops(stops, max_later_stops=10, sort=True):
         '3' : u'\u2462',
         '4' : u'\u2463',
         '5' : u'\u2464',
-        '6' : u'\u2465',
-        'L' : u'\u24C1'
+        '6' : u'\u2465'
     }
 
     Station = collections.namedtuple('Station', ['id', 'name', 'trains'])
