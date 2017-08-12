@@ -271,8 +271,10 @@ class GtfsCollection:
     def load_real_time_data(self):
         self.__clear_real_time_data()
         logging.info("Fetching data from mta.info...")
-        self.__fetch_and_ingest_from_url('http://datamine.mta.info/mta_esi.php?key='+self.api_key+'&feed_id=1')
-        self.__fetch_and_ingest_from_url('http://datamine.mta.info/mta_esi.php?key='+self.api_key+'&feed_id=2')
+        for feed_id in ("1", "2", "16", "21", "26"):
+          self.__fetch_and_ingest_from_url(
+              'http://datamine.mta.info/mta_esi.php?key='
+              +self.api_key+'&feed_id='+ feed_id)
 
     def get_upcoming_trains_at_stop(self, stop):
         return self.__get_stop(stop)
